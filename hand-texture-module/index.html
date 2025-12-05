@@ -231,11 +231,11 @@
     .hero-chip {
       position: absolute;
       left: 16px;
-      top: 14px;
+      top: 10px;
       padding: 4px 10px;
       border-radius: var(--radius-pill);
-      background: rgba(5, 6, 12, 0.85);
-      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(5, 6, 12, 0.085);
+      border: 1px solid rgba(255,255,255,0.012);
       font-size: 0.74rem;
       color: var(--text-muted);
       backdrop-filter: blur(10px);
@@ -487,14 +487,8 @@
       <div class="hero-media">
         <div class="hero-media-inner">
           <!-- Replace this image with your teaser figure -->
-          <img src="assets/teaser.jpg" alt="Teaser: texture-guided monocular 3D hand reconstruction." />
-          <div class="hero-chip">
-            Texture-guided alignment from in-the-wild RGB
-          </div>
-          <div class="hero-stat">
-            <span>UV-space texture priors</span>
-            <span class="hero-stat-pill">+ Alignment Loss</span>
-          </div>
+          <img src="assets/fig1.png" alt="Teaser: texture-guided monocular 3D hand reconstruction." />
+          
         </div>
       </div>
     </header>
@@ -528,7 +522,7 @@
       <!-- Method overview -->
       <section id="method">
         <h2>Method Overview</h2>
-        <div class="two-col">
+        
           <div>
             <h3>Texture module in UV space</h3>
             <p>
@@ -560,27 +554,8 @@
             </ul>
           </div>
 
-          <div>
-            <div class="figure-grid">
-              <div class="figure-card">
-                <img src="assets/pipeline.jpg" alt="Overview of the proposed texture-guided reconstruction pipeline." />
-                <div class="caption">
-                  Figure: Pipeline. An image-to-mesh baseline (HaMeR) predicts 3D hands; UV-RGB samples
-                  are gathered from visible pixels, completed by the texture module, and rendered back
-                  for photometric supervision.
-                </div>
-              </div>
 
-              <div class="figure-card">
-                <img src="assets/uv_space.jpg" alt="Visualization of sparse UV observations and reconstructed UV textures." />
-                <div class="caption">
-                  Figure: UV-space texture. Sparse observations from monocular views are consolidated
-                  into a full UV map via transformer-based aggregation.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+       
       </section>
 
       <!-- Contributions -->
