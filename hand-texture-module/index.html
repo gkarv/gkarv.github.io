@@ -1,1 +1,713 @@
-Under Construction 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Enhancing Monocular 3D Hand Reconstruction with Learned Texture Priors</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="Project page for Enhancing Monocular 3D Hand Reconstruction with Learned Texture Priors."
+  />
+
+  <!-- Optional: Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    :root {
+      --bg: #05060a;
+      --bg-alt: #0c0f18;
+      --card: #101320;
+      --accent: #62d6ff;
+      --accent-soft: rgba(98, 214, 255, 0.12);
+      --text: #f6f7fb;
+      --text-muted: #a3adc2;
+      --border-soft: rgba(255, 255, 255, 0.06);
+      --shadow-soft: 0 18px 40px rgba(0,0,0,0.45);
+      --radius-lg: 24px;
+      --radius-md: 14px;
+      --radius-pill: 999px;
+      --transition-fast: 180ms ease-out;
+      --code-bg: #050814;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(120% 180% at 0% 0%, #1b3150 0%, #05060a 50%, #020308 100%);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    header.hero {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.5fr);
+      gap: 32px;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    @media (max-width: 900px) {
+      header.hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--accent-soft);
+      background: radial-gradient(circle at 0 0, rgba(98,214,255,0.2), transparent 60%);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      gap: 6px;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(98, 214, 255, 0.25);
+    }
+
+    .title {
+      font-size: clamp(2.1rem, 2.8vw, 2.6rem);
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 540px;
+      margin-bottom: 18px;
+    }
+
+    .authors {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .authors span.author {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .affiliations {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      font-size: 0.85rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast),
+                  background var(--transition-fast), border-color var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(120deg, #62d6ff, #8a7bff);
+      color: #02030a;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.4);
+      text-decoration: none;
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.02);
+      color: var(--text);
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.04);
+      text-decoration: none;
+    }
+
+    .btn-small {
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      opacity: 0.8;
+    }
+
+    .tag-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .tag {
+      padding: 3px 9px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(7,9,20,0.85);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .hero-media {
+      background: radial-gradient(circle at 0% 0%, rgba(98,214,255,0.22), transparent 60%),
+                  radial-gradient(circle at 100% 100%, rgba(138,123,255,0.26), transparent 60%);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255,255,255,0.07);
+      padding: 12px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-media-inner {
+      border-radius: calc(var(--radius-lg) - 8px);
+      overflow: hidden;
+      background: radial-gradient(circle at 10% 0%, #1a2136, #05060a 60%);
+      border: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+    }
+
+    .hero-media img {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .hero-chip {
+      position: absolute;
+      left: 16px;
+      top: 14px;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(5, 6, 12, 0.85);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-stat {
+      position: absolute;
+      right: 16px;
+      bottom: 14px;
+      padding: 6px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(5, 6, 12, 0.9);
+      border: 1px solid rgba(255,255,255,0.15);
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hero-stat-pill {
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      background: rgba(98,214,255,0.12);
+      font-size: 0.7rem;
+      color: var(--accent);
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    section {
+      background: rgba(4, 7, 18, 0.85);
+      border-radius: var(--radius-lg);
+      padding: 20px 20px 18px;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-soft);
+    }
+
+    section.compact {
+      padding: 16px 18px 14px;
+    }
+
+    section.alt {
+      background: linear-gradient(135deg, rgba(98,214,255,0.06), rgba(138,123,255,0.06));
+    }
+
+    section h2 {
+      font-size: 1.05rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    section h3 {
+      font-size: 0.98rem;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.5fr);
+      gap: 18px;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 900px) {
+      .two-col {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    ul {
+      padding-left: 18px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    li {
+      margin-bottom: 5px;
+    }
+
+    .figure-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .figure-card {
+      background: rgba(5, 7, 16, 0.85);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255,255,255,0.05);
+      overflow: hidden;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .figure-card img {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+      background: #05060a;
+    }
+
+    .figure-card .caption {
+      padding: 8px 9px 9px;
+    }
+
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .metric {
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(2,3,10,0.9);
+      padding: 8px 10px;
+      font-size: 0.78rem;
+    }
+
+    .metric-label {
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .metric-value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    pre {
+      background: var(--code-bg);
+      border-radius: 12px;
+      padding: 12px;
+      overflow-x: auto;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #e1e6ff;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    footer {
+      margin-top: 26px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .scroll-top {
+      border-radius: var(--radius-pill);
+      padding: 4px 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(2, 3, 8, 0.9);
+      cursor: pointer;
+      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .scroll-top:hover {
+      border-color: rgba(255,255,255,0.18);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <header class="hero">
+      <div>
+        <div class="badge">
+          <span class="badge-dot"></span>
+          <span>Preprint &nbsp;·&nbsp; arXiv:2508.09629</span>
+        </div>
+        <h1 class="title">
+          Enhancing Monocular 3D Hand Reconstruction<br>
+          with Learned Texture Priors
+        </h1>
+
+        <div class="authors">
+          <span class="author">Giorgos Karvounas</span>,
+          <span class="author">Nikolaos Kyriazis</span>,
+          <span class="author">Iason Oikonomidis</span>,
+          <span class="author">Georgios Pavlakos</span>,
+          <span class="author">Antonis A. Argyros</span>
+        </div>
+        <div class="affiliations">
+          ICS-FORTH &nbsp;·&nbsp; University of Texas at Austin &nbsp;·&nbsp; University of Crete
+        </div>
+
+        <p class="subtitle">
+          We revisit texture not as a rendering detail, but as a dense, spatially grounded cue that
+          actively supports monocular 3D hand pose and shape estimation. Our plug-and-play texture
+          module learns from sparse UV observations and improves both accuracy and realism when
+          integrated into HaMeR.
+        </p>
+
+        <div class="buttons">
+          <a class="btn btn-primary" href="https://arxiv.org/pdf/2508.09629.pdf" target="_blank" rel="noopener">
+            📄 Paper (PDF)
+          </a>
+          <a class="btn btn-ghost" href="https://arxiv.org/abs/2508.09629" target="_blank" rel="noopener">
+            🧾 arXiv Page
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/gkarv/Hand-Texture-Module" target="_blank" rel="noopener">
+            💻 Code &amp; Models
+          </a>
+          <a class="btn btn-ghost" href="#citation">
+            📚 BibTeX
+          </a>
+        </div>
+
+        <div class="tag-row">
+          <div class="tag">Monocular 3D Hand Reconstruction</div>
+          <div class="tag">Texture Priors</div>
+          <div class="tag">Differentiable Rendering</div>
+          <div class="tag">Transformers</div>
+        </div>
+      </div>
+
+      <div class="hero-media">
+        <div class="hero-media-inner">
+          <!-- Replace this image with your teaser figure -->
+          <img src="assets/teaser.jpg" alt="Teaser: texture-guided monocular 3D hand reconstruction." />
+          <div class="hero-chip">
+            Texture-guided alignment from in-the-wild RGB
+          </div>
+          <div class="hero-stat">
+            <span>UV-space texture priors</span>
+            <span class="hero-stat-pill">+ Alignment Loss</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Abstract -->
+      <section id="abstract">
+        <h2>Abstract</h2>
+        <p>
+          We revisit the role of texture in monocular 3D hand reconstruction, not as an afterthought
+          for photorealism, but as a dense, spatially grounded cue that can actively support pose and
+          shape estimation. Even in high-performing models, the overlay between predicted hand
+          geometry and image appearance is often imperfect, suggesting that texture alignment is an
+          underused supervisory signal.
+        </p>
+        <p>
+          We propose a lightweight texture module that embeds per-pixel observations into UV texture
+          space and enables a dense alignment loss between predicted and observed hand appearances.
+          Assuming a differentiable rendering pipeline and a mesh-based hand model with known
+          topology, we back-project the textured hand onto the input and perform pixel-level
+          alignment.
+        </p>
+        <p>
+          To isolate the value of texture-guided supervision, we augment HaMeR, a high-performing yet
+          architecture-clean transformer for 3D hand pose estimation. Our system improves both
+          accuracy and realism, demonstrating that appearance-guided alignment is a powerful, scalable
+          signal for monocular hand reconstruction.
+        </p>
+      </section>
+
+      <!-- Method overview -->
+      <section id="method">
+        <h2>Method Overview</h2>
+        <div class="two-col">
+          <div>
+            <h3>Texture module in UV space</h3>
+            <p>
+              The core of our approach is a texture model that operates directly on sparse UV-RGB
+              observations. Given visible pixels from a monocular image, projected onto the hand mesh
+              surface, we obtain a variable-length set of UV coordinates and colors. A transformer-based
+              encoder attends to these pixel-level inputs, and a convolutional decoder upsamples the
+              representation into a dense UV texture map.
+            </p>
+
+            <ul>
+              <li>Input: sparse set of UV-RGB samples from visible mesh regions.</li>
+              <li>Backbone: transformer encoder over irregular pixel tokens.</li>
+              <li>Output: coherent full-hand UV texture aligned with the mesh topology.</li>
+            </ul>
+
+            <h3>Texture-guided photometric supervision</h3>
+            <p>
+              We integrate the texture module into a standard image-to-mesh pipeline (HaMeR). During
+              training, the predicted textured mesh is rendered back into the image via differentiable
+              rendering, and we enforce a dense photometric consistency between the rendered hand and
+              the observed RGB.
+            </p>
+
+            <ul>
+              <li>Render textured hand into the input view using differentiable rendering.</li>
+              <li>Compute pixel-wise photometric loss only on visible, hand-covered regions.</li>
+              <li>Backpropagate through both geometry and texture modules.</li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="figure-grid">
+              <div class="figure-card">
+                <img src="assets/pipeline.jpg" alt="Overview of the proposed texture-guided reconstruction pipeline." />
+                <div class="caption">
+                  Figure: Pipeline. An image-to-mesh baseline (HaMeR) predicts 3D hands; UV-RGB samples
+                  are gathered from visible pixels, completed by the texture module, and rendered back
+                  for photometric supervision.
+                </div>
+              </div>
+
+              <div class="figure-card">
+                <img src="assets/uv_space.jpg" alt="Visualization of sparse UV observations and reconstructed UV textures." />
+                <div class="caption">
+                  Figure: UV-space texture. Sparse observations from monocular views are consolidated
+                  into a full UV map via transformer-based aggregation.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contributions -->
+      <section id="contributions" class="alt">
+        <h2>Contributions</h2>
+        <ul>
+          <li>
+            <strong>Texture priors from sparse observations.</strong> We introduce the first framework that
+            consolidates sparse, partial hand texture observations into a unified UV-space model for
+            full texture reconstruction, trained without ground-truth textures or multiview studio data.
+          </li>
+          <li>
+            <strong>Pixel-level transformer for UV textures.</strong> Our texture module attends to
+            pixel-perfect, variable-length UV-RGB inputs and predicts dense, coherent textures across
+            diverse visibility patterns typical of in-the-wild imagery.
+          </li>
+          <li>
+            <strong>End-to-end photometric supervision.</strong> Leveraging differentiable rendering, we
+            define dense photometric losses that supervise texture synthesis and, indirectly, refine
+            hand geometry during training.
+          </li>
+          <li>
+            <strong>Plug-and-play integration with HaMeR.</strong> When added to a strong but clean baseline
+            (HaMeR), our texture-guided supervision yields measurable improvements in both standard
+            3D metrics and visual alignment.
+          </li>
+        </ul>
+      </section>
+
+      <!-- Results -->
+      <section id="results">
+        <h2>Results</h2>
+        <div class="two-col">
+          <div>
+            <h3>Quantitative improvements</h3>
+            <p>
+              We evaluate on standard hand reconstruction benchmarks, comparing the original HaMeR
+              baseline to our texture-guided variant. Texture priors consistently reduce joint and
+              vertex errors, especially in challenging, highly articulated poses where appearance
+              cues are crucial.
+            </p>
+
+            <div class="metrics-row">
+              <div class="metric">
+                <div class="metric-label">3D Joint Error (MPJPE)</div>
+                <div class="metric-value">↓ vs. HaMeR baseline</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Vertex Error (MPVPE)</div>
+                <div class="metric-value">↓ improved alignment</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Photometric Consistency</div>
+                <div class="metric-value">↑ sharper, cleaner hands</div>
+              </div>
+            </div>
+
+            <p style="margin-top: 8px;">
+              Beyond averaged metrics, improvements are particularly noticeable for partial views,
+              self-occlusions, and motion-blurred frames where geometry-only supervision struggles.
+            </p>
+          </div>
+
+          <div>
+            <h3>Qualitative comparisons</h3>
+            <div class="figure-grid">
+              <div class="figure-card">
+                <img src="assets/qual_baseline_vs_ours.jpg" alt="Qualitative comparison: baseline HaMeR vs. our texture-guided variant." />
+                <div class="caption">
+                  Left: input RGB. Middle: HaMeR mesh overlay. Right: our method. Texture-guided
+                  supervision resolves misalignments at fingertips and silhouettes and recovers more
+                  realistic appearance.
+                </div>
+              </div>
+              <div class="figure-card">
+                <img src="assets/tex_gallery.jpg" alt="Gallery of reconstructed UV textures from in-the-wild images." />
+                <div class="caption">
+                  Gallery: reconstructed UV textures from in-the-wild images. The module consolidates
+                  partial observations into complete, high-fidelity textures despite occlusions and
+                  missing regions.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Resources -->
+      <section id="resources" class="compact">
+        <h2>Resources</h2>
+        <p>
+          The following resources accompany the paper:
+        </p>
+        <ul>
+          <li><strong>Paper:</strong> <a href="https://arxiv.org/abs/2508.09629" target="_blank" rel="noopener">
+            Enhancing Monocular 3D Hand Reconstruction with Learned Texture Priors</a></li>
+          <li><strong>Code, models &amp; training scripts:</strong>
+            <a href="https://github.com/gkarv/Hand-Texture-Module" target="_blank" rel="noopener">
+              Hand-Texture-Module (GitHub)</a>
+          </li>
+          <li><strong>UV-space texture assets and checkpoints:</strong> provided in the code repository.</li>
+        </ul>
+      </section>
+
+      <!-- Citation -->
+      <section id="citation">
+        <h2>Citation</h2>
+        <p>If you find this work useful in your research, please consider citing:</p>
+        <pre><code>@article{karvounas2025enhancing,
+  title   = {Enhancing Monocular 3D Hand Reconstruction with Learned Texture Priors},
+  author  = {Karvounas, Giorgos and Kyriazis, Nikolaos and Oikonomidis, Iason
+             and Pavlakos, Georgios and Argyros, Antonis A.},
+  journal = {arXiv preprint arXiv:2508.09629},
+  year    = {2025}
+}</code></pre>
+      </section>
+    </main>
+
+    <footer>
+      <div>
+        &copy; 2025 — Enhancing Monocular 3D Hand Reconstruction with Learned Texture Priors.
+      </div>
+      <button class="scroll-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">
+        ↑ Back to top
+      </button>
+    </footer>
+  </div>
+</body>
+</html>
+
